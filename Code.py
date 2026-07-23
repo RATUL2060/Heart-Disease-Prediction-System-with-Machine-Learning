@@ -5,7 +5,15 @@ import pickle
 import pandas as pd
 import numpy as np
 from PIL import Image
-model = pickle.load(open(r'C:\Users\aiden\Desktop\Intershipsss\Project 8\main\model.sav', 'rb'))
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+
+MODEL_PATH = BASE_DIR / "models" / "model.sav"
+DATASET_PATH = BASE_DIR / "data" / "DataSet.csv"
+IMAGE_FOLDER = BASE_DIR / "images"
+
+model = pickle.load(open(MODEL_PATH, "rb"))
 
 st.header(":green[Heart Disease Prediction using Machine Learning]")
 st.markdown("""<b>Heart disease is a critical condition that affects the heart and can
@@ -18,19 +26,19 @@ st.markdown("""<b>Heart disease is a critical condition that affects the heart a
 st.sidebar.header(':orange[Heart Disease Parameters]')
 
 
-image2=Image.open("C:/Users/aiden/Desktop/Intershipsss/Project 8/main/machine learning.jpeg")
+image2 = Image.open(IMAGE_FOLDER / "machine learning.jpeg")
 st.image(image2,'')
 st.header(":green[How Model is Working in Brief]")
-image3=Image.open("C:/Users/aiden/Desktop/Intershipsss/Project 8/main/Model.png")
+image3 = Image.open(IMAGE_FOLDER / "Model.png")
 st.image(image3,'')
 
 st.header(":green[Facts about Heart disease]")
-image0=Image.open("C:/Users/aiden/Desktop/Intershipsss/Project 8/main/facts.png")
+image0 = Image.open(IMAGE_FOLDER / "facts.png")
 st.image(image0,'')
 st.write("")
 st.header(":green[Stay Healthy ♥]")
 
-image4=Image.open("C:/Users/aiden/Desktop/Intershipsss/Project 8/main/health.jpg")
+image4 = Image.open(IMAGE_FOLDER / "health.jpg")
 st.image(image4,'')
 
 
@@ -97,7 +105,7 @@ def user_input():
     return report_data
 user_data =user_input()
 st.subheader(":green[Heart Data]")
-df=pd.read_csv(r"C:\Users\aiden\Desktop\Intershipsss\Project 8\main\heart.csv")
+df = pd.read_csv(DATASET_PATH)
 st.write(df)
 predictions=model.predict(user_data)
 if st.button("Predict"):
