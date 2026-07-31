@@ -1,0 +1,18 @@
+# VS Code
+.vscode/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/venv/
+**/.venv/
+
+# Environment
+**/.env
+
+# Database
+**/*.db
