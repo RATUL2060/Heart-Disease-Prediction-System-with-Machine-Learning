@@ -29,7 +29,7 @@ const RegisterPage = () => {
     setIsLoading(true);
     try {
       await register(form.email, form.fullName, form.password);
-      toast.success('Account created! Welcome to CardioCare AI 🎉');
+      toast.success('Account created! Welcome to CardioSense AI 🎉');
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
@@ -41,24 +41,29 @@ const RegisterPage = () => {
   const inputClass = "input-field bg-white/5 border-white/10 text-white placeholder-slate-500 focus:border-medical-500";
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-dark-950 via-medical-900 to-dark-900">
+    <div className="min-h-screen flex bg-gradient-hero">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12">
-        <div className="relative z-10 text-center">
-          <div className="animate-heartbeat inline-flex p-6 rounded-full bg-cardiac-500/20 border border-cardiac-500/30 mb-8">
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-medical-500/10 rounded-full blur-[60px] animate-orb-float" />
+          <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-cyan-500/10 rounded-full blur-[40px] animate-orb-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute inset-0 grid-pattern opacity-30" />
+        </div>
+        <div className="relative z-10 text-center max-w-md">
+          <div className="animate-heartbeat inline-flex p-6 rounded-3xl bg-cardiac-500/15 border border-cardiac-500/25 mb-8">
             <Heart className="w-16 h-16 text-cardiac-400 fill-cardiac-400" />
           </div>
-          <h1 className="text-4xl font-extrabold text-white mb-4">Join CardioCare AI</h1>
-          <p className="text-slate-300 text-lg max-w-md leading-relaxed">
-            Create your account and start predicting heart disease risk with our AI-powered platform.
+          <h1 className="text-4xl font-extrabold text-white mb-3 font-display">Join CardioSense AI</h1>
+          <p className="text-slate-300 text-lg max-w-sm mx-auto leading-relaxed">
+            Create your account and start predicting cardiac risk with our AI-powered platform.
           </p>
-          <div className="mt-12 space-y-4 text-left">
+          <div className="mt-10 space-y-3 text-left">
             {[
               ['🔒', 'Secure & Private', 'Your patient data is encrypted and never shared.'],
               ['⚡', 'Instant Results', 'Get predictions in under a second.'],
               ['📊', 'Full History', 'Track predictions over time with full analytics.'],
             ].map(([icon, title, desc]) => (
-              <div key={title} className="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div key={title} className="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/8 transition-colors">
                 <span className="text-2xl">{icon}</span>
                 <div>
                   <div className="text-white font-semibold text-sm">{title}</div>
@@ -74,15 +79,17 @@ const RegisterPage = () => {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           <div className="glass rounded-3xl p-8 shadow-2xl border border-white/10">
-            <div className="lg:hidden flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-xl bg-cardiac-500/20 border border-cardiac-500/30">
-                <Heart className="w-6 h-6 text-cardiac-400 fill-cardiac-400" />
+            <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
+              <div className="p-2.5 rounded-2xl bg-cardiac-500/20 border border-cardiac-500/30 animate-heartbeat">
+                <Heart className="w-7 h-7 text-cardiac-400 fill-cardiac-400" />
               </div>
-              <span className="text-white font-bold text-xl">CardioCare AI</span>
+              <span className="text-white font-extrabold text-2xl font-display">CardioSense AI</span>
             </div>
 
-            <h2 className="text-2xl font-bold text-white mb-1">Create an account</h2>
-            <p className="text-slate-400 text-sm mb-8">Start your free account today</p>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white font-display">Create an account</h2>
+              <p className="text-slate-400 text-sm mt-1">Start your free account today</p>
+            </div>
 
             {error && (
               <div className="mb-6 flex items-start gap-3 p-3 rounded-xl bg-cardiac-900/50 border border-cardiac-700 text-cardiac-300 text-sm animate-fade-in">
@@ -132,7 +139,11 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              <button type="submit" id="register-submit" disabled={isLoading} className="w-full btn-primary py-3.5 text-base mt-2">
+              <button
+                type="submit" id="register-submit" disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-base text-white mt-2 transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                style={{ background: 'linear-gradient(135deg, #0a84ff 0%, #06b6d4 100%)', boxShadow: '0 6px 24px rgba(10, 132, 255, 0.4)' }}
+              >
                 {isLoading ? (
                   <>
                     <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">

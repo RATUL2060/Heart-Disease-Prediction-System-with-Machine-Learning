@@ -16,3 +16,8 @@ frontend/dist/
 
 # Database
 **/*.db
+
+.ipynb_checkpoints/
+*.ipynb_checkpointse
+
+frontend/backend/heart_disease.db

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { predictHeartDisease } from '../services/api';
-import { Heart, User, Activity, ChevronRight, ChevronLeft, CheckCircle, XCircle, RotateCcw, AlertCircle } from 'lucide-react';
+import {
+  Heart, User, Activity, ChevronRight, ChevronLeft,
+  CheckCircle, XCircle, RotateCcw, AlertCircle,
+  HeartPulse, Stethoscope, ClipboardList, ArrowRight,
+  ShieldAlert, ShieldCheck, PhoneCall, Calendar
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 
-// ---- Form Steps Configuration ----
+// ── Steps config ──
 const STEPS = [
   { id: 1, title: 'Demographics', icon: <User className="w-5 h-5" />, description: 'Basic patient information' },
-  { id: 2, title: 'Vitals', icon: <Activity className="w-5 h-5" />, description: 'Physiological measurements' },
-  { id: 3, title: 'Cardiac Tests', icon: <Heart className="w-5 h-5" />, description: 'Exercise and ECG results' },
+  { id: 2, title: 'Vitals', icon: <HeartPulse className="w-5 h-5" />, description: 'Physiological measurements' },
+  { id: 3, title: 'Cardiac Tests', icon: <Stethoscope className="w-5 h-5" />, description: 'Exercise & ECG results' },
 ];
 
 const INITIAL_STATE = {
@@ -21,10 +26,11 @@ const CHEST_PAIN_LABELS = ['Typical Angina', 'Atypical Angina', 'Non-anginal Pai
 const ECG_LABELS = ['Normal', 'ST-T Wave Abnormality', 'Left Ventricular Hypertrophy'];
 const SLOPE_LABELS = ['Up-sloping', 'Flat', 'Down-sloping'];
 
+// ── Field components ──
 const SelectField = ({ label, id, name, value, onChange, options, disabled, tooltip }) => (
-  <div>
+  <div className="group">
     <label htmlFor={id} className="input-label">{label}</label>
-    {tooltip && <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{tooltip}</p>}
+    {tooltip && <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">{tooltip}</p>}
     <select id={id} name={name} value={value} onChange={onChange} className="input-field" disabled={disabled}>
       {options.map((opt, i) => <option key={i} value={i}>{opt}</option>)}
     </select>
@@ -34,64 +40,214 @@ const SelectField = ({ label, id, name, value, onChange, options, disabled, tool
 const InputField = ({ label, id, name, value, onChange, placeholder, error, disabled, step, tooltip }) => (
   <div>
     <label htmlFor={id} className="input-label">{label}</label>
-    {tooltip && <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{tooltip}</p>}
+    {tooltip && <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">{tooltip}</p>}
     <input
       type="number" step={step || '1'} id={id} name={name} value={value}
       onChange={onChange} disabled={disabled} placeholder={placeholder}
-      className={`input-field ${error ? 'border-cardiac-500 focus:border-cardiac-500 focus:ring-cardiac-500' : ''}`}
+      className={`input-field ${error ? 'border-cardiac-500 focus:border-cardiac-500 focus:ring-cardiac-500/50 bg-cardiac-50/30 dark:bg-cardiac-900/10' : ''}`}
     />
-    {error && <p className="input-error flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" />{error}</p>}
+    {error && (
+      <p className="input-error">
+        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+        {error}
+      </p>
+    )}
   </div>
 );
 
-// ---- Result Card ----
+// ── Risk Gauge (SVG arc) ──
+const RiskGauge = ({ isHighRisk }) => {
+  const pct = isHighRisk ? 82 : 18;
+  const radius = 54;
+  const circumference = Math.PI * radius; // half circle
+  const offset = circumference * (1 - pct / 100);
+  const color = isHighRisk
+    ? 'url(#gaugeHighGrad)'
+    : 'url(#gaugeLowGrad)';
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width="160" height="90" viewBox="0 0 160 90">
+        <defs>
+          <linearGradient id="gaugeHighGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#f43f5e" />
+          </linearGradient>
+          <linearGradient id="gaugeLowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#22c55e" />
+            <stop offset="100%" stopColor="#06b6d4" />
+          </linearGradient>
+        </defs>
+        {/* Track */}
+        <path
+          d="M 16 80 A 64 64 0 0 1 144 80"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="12"
+          strokeLinecap="round"
+          className="text-slate-100 dark:text-dark-700"
+        />
+        {/* Fill */}
+        <path
+          d="M 16 80 A 64 64 0 0 1 144 80"
+          fill="none"
+          stroke={color}
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeDasharray={`${circumference}`}
+          strokeDashoffset={`${offset}`}
+          style={{
+            transition: 'stroke-dashoffset 1.2s ease-out',
+            filter: isHighRisk ? 'drop-shadow(0 0 6px rgba(244,63,94,0.6))' : 'drop-shadow(0 0 6px rgba(34,197,94,0.6))',
+          }}
+        />
+        {/* Needle base dot */}
+        <circle cx="80" cy="80" r="6" fill={isHighRisk ? '#f43f5e' : '#22c55e'} />
+      </svg>
+      <div className={`text-4xl font-extrabold font-display -mt-2 ${isHighRisk ? 'text-gradient-red' : 'text-gradient-green'}`}>
+        {pct}%
+      </div>
+      <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Risk Score</div>
+    </div>
+  );
+};
+
+// ── Result Card ──
 const PredictionResultCard = ({ prediction, onReset }) => {
   const isHighRisk = prediction === 1;
+
+  const HIGH_RISK_RECS = [
+    { icon: <PhoneCall className="w-4 h-4" />, text: 'Schedule a cardiology consultation immediately' },
+    { icon: <ClipboardList className="w-4 h-4" />, text: 'Request ECG, stress test & echocardiogram' },
+    { icon: <Calendar className="w-4 h-4" />, text: 'Monitor blood pressure and cholesterol daily' },
+  ];
+  const LOW_RISK_RECS = [
+    { icon: <Activity className="w-4 h-4" />, text: 'Maintain regular physical activity (150 min/week)' },
+    { icon: <Calendar className="w-4 h-4" />, text: 'Schedule annual cardiac health check-ups' },
+    { icon: <Heart className="w-4 h-4" />, text: 'Sustain a heart-healthy diet and lifestyle' },
+  ];
+  const recs = isHighRisk ? HIGH_RISK_RECS : LOW_RISK_RECS;
+
   return (
-    <div className="animate-bounce-in mt-8">
-      <div className={`rounded-2xl overflow-hidden border-2 ${isHighRisk ? 'border-cardiac-500 shadow-glow-red' : 'border-green-500 shadow-glow-green'}`}>
-        {/* Result Header */}
-        <div className={`px-8 py-10 text-center ${isHighRisk ? 'bg-gradient-to-br from-cardiac-900/80 to-cardiac-800/60 dark:from-cardiac-900 dark:to-dark-800' : 'bg-gradient-to-br from-green-900/80 to-green-800/60 dark:from-green-900 dark:to-dark-800'}`}>
-          <div className={`inline-flex p-5 rounded-full mb-5 ${isHighRisk ? 'bg-cardiac-500/20 border border-cardiac-500/40' : 'bg-green-500/20 border border-green-500/40'}`}>
-            {isHighRisk
-              ? <XCircle className="w-12 h-12 text-cardiac-400" />
-              : <CheckCircle className="w-12 h-12 text-green-400" />
-            }
+    <div className="animate-bounce-in mt-8 space-y-4">
+      {/* Main Result Card */}
+      <div className={`rounded-3xl overflow-hidden border-2 ${
+        isHighRisk
+          ? 'border-cardiac-500/60 shadow-glow-red'
+          : 'border-green-500/60 shadow-glow-green'
+      }`}>
+        {/* Header */}
+        <div className={`px-8 py-10 text-center relative overflow-hidden ${
+          isHighRisk
+            ? 'bg-gradient-to-br from-cardiac-900 to-dark-800'
+            : 'bg-gradient-to-br from-green-900 to-dark-800'
+        }`}>
+          <div className="absolute inset-0 grid-pattern opacity-30" />
+          <div className="relative z-10">
+            <div className={`inline-flex p-5 rounded-3xl mb-5 ${
+              isHighRisk
+                ? 'bg-cardiac-500/20 border border-cardiac-500/40'
+                : 'bg-green-500/20 border border-green-500/40'
+            }`}>
+              {isHighRisk
+                ? <ShieldAlert className="w-14 h-14 text-cardiac-400" />
+                : <ShieldCheck className="w-14 h-14 text-green-400" />
+              }
+            </div>
+            <h2 className={`text-4xl font-extrabold mb-2 font-display ${
+              isHighRisk ? 'text-cardiac-200' : 'text-green-200'
+            }`}>
+              {isHighRisk ? 'High Risk' : 'Low Risk'}
+            </h2>
+            <p className={`text-sm font-medium ${
+              isHighRisk ? 'text-cardiac-400' : 'text-green-400'
+            }`}>
+              {isHighRisk
+                ? 'Heart disease indicators detected — immediate attention recommended'
+                : 'No significant cardiac risk factors detected at this time'
+              }
+            </p>
           </div>
-          <h2 className={`text-3xl font-extrabold mb-2 ${isHighRisk ? 'text-cardiac-300' : 'text-green-300'}`}>
-            {isHighRisk ? '⚠️ High Risk' : '✅ Low Risk'}
-          </h2>
-          <p className={`text-sm ${isHighRisk ? 'text-cardiac-400' : 'text-green-400'}`}>
-            {isHighRisk ? 'Heart disease predicted' : 'No heart disease predicted'}
-          </p>
         </div>
 
-        {/* Risk Meter */}
-        <div className="px-8 py-6 bg-white dark:bg-dark-800">
-          <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-            <span>Low Risk</span>
-            <span>High Risk</span>
-          </div>
-          <div className="progress-bar">
-            <div
-              className={`h-full rounded-full transition-all duration-1000 ease-out ${isHighRisk ? 'bg-gradient-to-r from-yellow-500 to-cardiac-500' : 'bg-gradient-to-r from-green-400 to-green-500'}`}
-              style={{ width: isHighRisk ? '82%' : '18%' }}
-            />
+        {/* Gauge + details */}
+        <div className="px-6 sm:px-10 py-8 bg-white dark:bg-dark-800 space-y-8">
+          {/* Gauge */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+            <RiskGauge isHighRisk={isHighRisk} />
+            <div className="flex flex-col gap-3 w-full sm:max-w-xs">
+              <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <span>Low</span>
+                <span>Risk Level</span>
+                <span>High</span>
+              </div>
+              <div className="progress-bar h-3">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                    isHighRisk
+                      ? 'bg-gradient-to-r from-yellow-400 to-cardiac-500'
+                      : 'bg-gradient-to-r from-green-400 to-cyan-400'
+                  }`}
+                  style={{ width: isHighRisk ? '82%' : '18%' }}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                {[
+                  { label: 'Risk Level', value: isHighRisk ? 'Elevated' : 'Normal' },
+                  { label: 'Confidence', value: 'High' },
+                ].map(({ label, value }) => (
+                  <div key={label} className={`rounded-xl p-3 text-center border ${
+                    isHighRisk
+                      ? 'bg-cardiac-50 dark:bg-cardiac-900/20 border-cardiac-200 dark:border-cardiac-800'
+                      : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  }`}>
+                    <div className={`text-sm font-bold ${
+                      isHighRisk ? 'text-cardiac-700 dark:text-cardiac-300' : 'text-green-700 dark:text-green-300'
+                    }`}>{value}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Recommendation */}
-          <div className={`mt-6 p-4 rounded-xl text-sm ${isHighRisk ? 'bg-cardiac-50 dark:bg-cardiac-900/20 border border-cardiac-200 dark:border-cardiac-800 text-cardiac-700 dark:text-cardiac-300' : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300'}`}>
-            <p className="font-semibold mb-1">Recommendation</p>
-            <p>{isHighRisk
-              ? 'Schedule a cardiology consultation immediately. Further diagnostic testing (ECG, stress test, echocardiogram) is recommended.'
-              : 'Continue maintaining a healthy lifestyle. Schedule routine check-ups annually and monitor blood pressure and cholesterol.'
-            }</p>
+          {/* Recommendations */}
+          <div className={`rounded-2xl p-6 border ${
+            isHighRisk
+              ? 'bg-cardiac-50 dark:bg-cardiac-900/15 border-cardiac-200 dark:border-cardiac-800'
+              : 'bg-green-50 dark:bg-green-900/15 border-green-200 dark:border-green-800'
+          }`}>
+            <p className={`text-xs font-bold uppercase tracking-widest mb-4 ${
+              isHighRisk ? 'text-cardiac-600 dark:text-cardiac-400' : 'text-green-600 dark:text-green-400'
+            }`}>
+              Clinical Recommendations
+            </p>
+            <div className="space-y-3">
+              {recs.map(({ icon, text }, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className={`flex-shrink-0 p-1.5 rounded-lg mt-0.5 ${
+                    isHighRisk
+                      ? 'bg-cardiac-100 dark:bg-cardiac-900/40 text-cardiac-600 dark:text-cardiac-400'
+                      : 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                  }`}>
+                    {icon}
+                  </div>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{text}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Disclaimer */}
+          <div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900 text-xs text-amber-700 dark:text-amber-400">
+            ⚠️ <strong>Note:</strong> This AI prediction is for educational purposes only. Always consult a qualified healthcare professional before making any medical decisions.
+          </div>
+
+          {/* Reset button */}
           <button
             onClick={onReset}
             id="assess-another"
-            className="w-full mt-5 btn-secondary flex items-center justify-center gap-2"
+            className="w-full btn-secondary flex items-center justify-center gap-2 py-3.5"
           >
             <RotateCcw className="w-4 h-4" />
             Assess Another Patient
@@ -102,11 +258,11 @@ const PredictionResultCard = ({ prediction, onReset }) => {
   );
 };
 
-// ---- Progress Bar ----
+// ── Progress Bar ──
 const ProgressBar = ({ current, total }) => (
   <div className="mb-8">
-    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-      <span>Step {current} of {total}</span>
+    <div className="flex justify-between text-xs font-semibold text-slate-400 dark:text-slate-500 mb-2.5">
+      <span className="text-medical-600 dark:text-medical-400">Step {current} of {total}</span>
       <span>{Math.round((current / total) * 100)}% complete</span>
     </div>
     <div className="progress-bar">
@@ -115,13 +271,14 @@ const ProgressBar = ({ current, total }) => (
   </div>
 );
 
-// ---- Main Component ----
+// ── Main Component ──
 const PredictionPage = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_STATE);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [direction, setDirection] = useState('right');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,10 +304,16 @@ const PredictionPage = () => {
   };
 
   const nextStep = () => {
-    if (validateStep(step)) setStep(s => s + 1);
+    if (validateStep(step)) {
+      setDirection('right');
+      setStep(s => s + 1);
+    }
   };
 
-  const prevStep = () => setStep(s => s - 1);
+  const prevStep = () => {
+    setDirection('left');
+    setStep(s => s - 1);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -182,76 +345,112 @@ const PredictionPage = () => {
     setErrors({});
   };
 
+  const animClass = direction === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left';
+
   return (
-    <div className="flex-1 py-10">
+    <div className="flex-1 py-12 bg-slate-50 dark:bg-dark-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Header */}
         <div className="text-center mb-10">
           <p className="section-label">AI Diagnostics</p>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Heart Disease Prediction</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Complete the 3-step form to receive an instant risk assessment</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-display">
+            Cardiac Risk Prediction
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-base">
+            Complete the 3-step form to receive an instant risk assessment
+          </p>
         </div>
 
         {/* Step Indicators */}
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center justify-center mb-10">
           {STEPS.map((s, i) => (
             <React.Fragment key={s.id}>
               <div className="flex flex-col items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 font-bold transition-all duration-300 ${
-                  step > s.id ? 'bg-medical-600 border-medical-600 text-white'
-                    : step === s.id ? 'bg-white dark:bg-dark-800 border-medical-500 text-medical-600 dark:text-medical-400 shadow-glow-blue'
-                    : 'bg-white dark:bg-dark-800 border-slate-300 dark:border-slate-600 text-slate-400'
+                <div className={`relative flex items-center justify-center w-12 h-12 rounded-2xl border-2 font-bold transition-all duration-400 ${
+                  step > s.id
+                    ? 'bg-gradient-to-br from-medical-500 to-cyan-500 border-transparent text-white shadow-glow-blue'
+                    : step === s.id
+                    ? 'bg-white dark:bg-dark-800 border-medical-500 text-medical-600 dark:text-medical-400 shadow-glow-blue'
+                    : 'bg-white dark:bg-dark-800 border-slate-200 dark:border-dark-600 text-slate-400 dark:text-slate-600'
                 }`}>
-                  {step > s.id ? <CheckCircle className="w-5 h-5" /> : s.icon}
+                  {step > s.id
+                    ? <CheckCircle className="w-5 h-5" />
+                    : s.icon
+                  }
+                  {step === s.id && (
+                    <div className="absolute inset-0 rounded-2xl border-2 border-medical-400/50 animate-ripple" />
+                  )}
                 </div>
-                <div className={`text-xs font-semibold mt-1.5 hidden sm:block ${step === s.id ? 'text-medical-600 dark:text-medical-400' : 'text-slate-400'}`}>
+                <div className={`text-xs font-bold mt-2 hidden sm:block transition-colors duration-200 ${
+                  step === s.id
+                    ? 'text-medical-600 dark:text-medical-400'
+                    : step > s.id
+                    ? 'text-medical-500 dark:text-medical-500'
+                    : 'text-slate-400 dark:text-slate-600'
+                }`}>
                   {s.title}
                 </div>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-3 transition-all duration-300 ${step > s.id ? 'bg-medical-500' : 'bg-slate-200 dark:bg-dark-700'}`} />
+                <div className={`flex-1 h-1 mx-3 rounded-full transition-all duration-500 ${
+                  step > s.id
+                    ? 'bg-gradient-to-r from-medical-500 to-cyan-500'
+                    : 'bg-slate-200 dark:bg-dark-700'
+                }`} />
               )}
             </React.Fragment>
           ))}
         </div>
 
-        {/* If result available */}
+        {/* Result or Form */}
         {result !== null ? (
           <PredictionResultCard prediction={result} onReset={handleReset} />
         ) : (
-          <div className="card p-6 sm:p-8">
+          <div className="card p-6 sm:p-8 shadow-lg dark:shadow-dark-950/50">
             <ProgressBar current={step} total={3} />
 
-            {/* Step Title */}
-            <div className="mb-6 flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-medical-50 dark:bg-medical-900/20 text-medical-600 dark:text-medical-400 border border-medical-200 dark:border-medical-800">
+            {/* Step title */}
+            <div className="mb-6 flex items-center gap-3 pb-5 border-b border-slate-100 dark:border-dark-700">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-medical-500/10 to-cyan-500/10 text-medical-600 dark:text-medical-400 border border-medical-200/50 dark:border-medical-800/50">
                 {STEPS[step - 1].icon}
               </div>
               <div>
-                <h2 className="font-bold text-slate-900 dark:text-white">{STEPS[step - 1].title}</h2>
+                <h2 className="font-bold text-slate-900 dark:text-white font-display">{STEPS[step - 1].title}</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">{STEPS[step - 1].description}</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* Step 1: Demographics */}
+              {/* Step 1 */}
               {step === 1 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-slide-in-right">
-                  <InputField label="Age (years)" id="Age" name="Age" value={formData.Age} onChange={handleChange} placeholder="e.g. 55" error={errors.Age} disabled={isLoading} />
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 ${animClass}`}>
+                  <InputField
+                    label="Age (years)" id="Age" name="Age"
+                    value={formData.Age} onChange={handleChange}
+                    placeholder="e.g. 55" error={errors.Age} disabled={isLoading}
+                  />
                   <div>
-                    <label htmlFor="Sex" className="input-label">Sex</label>
+                    <label htmlFor="Sex" className="input-label">Biological Sex</label>
                     <select id="Sex" name="Sex" value={formData.Sex} onChange={handleChange} className="input-field" disabled={isLoading}>
                       <option value="1">Male</option>
                       <option value="0">Female</option>
                     </select>
                   </div>
-                  <SelectField label="Chest Pain Type" id="ChestPainType" name="ChestPainType" value={formData.ChestPainType} onChange={handleChange} options={CHEST_PAIN_LABELS} disabled={isLoading} tooltip="Type of chest pain experienced by the patient" />
+                  <div className="sm:col-span-2">
+                    <SelectField
+                      label="Chest Pain Type" id="ChestPainType" name="ChestPainType"
+                      value={formData.ChestPainType} onChange={handleChange}
+                      options={CHEST_PAIN_LABELS} disabled={isLoading}
+                      tooltip="Select the type of chest pain experienced by the patient"
+                    />
+                  </div>
                 </div>
               )}
 
-              {/* Step 2: Vitals */}
+              {/* Step 2 */}
               {step === 2 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-slide-in-right">
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 ${animClass}`}>
                   <InputField label="Resting Blood Pressure (mm Hg)" id="RestingBP" name="RestingBP" value={formData.RestingBP} onChange={handleChange} placeholder="e.g. 120" error={errors.RestingBP} disabled={isLoading} />
                   <InputField label="Cholesterol (mm/dl)" id="Cholesterol" name="Cholesterol" value={formData.Cholesterol} onChange={handleChange} placeholder="e.g. 200" error={errors.Cholesterol} disabled={isLoading} />
                   <div>
@@ -262,27 +461,42 @@ const PredictionPage = () => {
                     </select>
                   </div>
                   <SelectField label="Resting ECG Results" id="RestingECG" name="RestingECG" value={formData.RestingECG} onChange={handleChange} options={ECG_LABELS} disabled={isLoading} />
-                  <InputField label="Maximum Heart Rate Achieved" id="MaxHR" name="MaxHR" value={formData.MaxHR} onChange={handleChange} placeholder="e.g. 150" error={errors.MaxHR} disabled={isLoading} />
+                  <div className="sm:col-span-2">
+                    <InputField label="Maximum Heart Rate Achieved (bpm)" id="MaxHR" name="MaxHR" value={formData.MaxHR} onChange={handleChange} placeholder="e.g. 150" error={errors.MaxHR} disabled={isLoading} />
+                  </div>
                 </div>
               )}
 
-              {/* Step 3: Cardiac Tests */}
+              {/* Step 3 */}
               {step === 3 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-slide-in-right">
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 ${animClass}`}>
                   <div>
                     <label htmlFor="ExerciseAngina" className="input-label">Exercise Induced Angina</label>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">Chest pain triggered by physical exertion</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">Chest pain triggered by physical exertion</p>
                     <select id="ExerciseAngina" name="ExerciseAngina" value={formData.ExerciseAngina} onChange={handleChange} className="input-field" disabled={isLoading}>
                       <option value="0">No</option>
                       <option value="1">Yes</option>
                     </select>
                   </div>
-                  <InputField label="Oldpeak (ST depression)" id="Oldpeak" name="Oldpeak" value={formData.Oldpeak} onChange={handleChange} placeholder="e.g. 1.5" error={errors.Oldpeak} disabled={isLoading} step="0.1" tooltip="ST depression induced by exercise relative to rest" />
-                  <SelectField label="ST Slope (Peak Exercise)" id="ST_Slope" name="ST_Slope" value={formData.ST_Slope} onChange={handleChange} options={SLOPE_LABELS} disabled={isLoading} tooltip="Slope of the peak exercise ST segment" />
+                  <InputField
+                    label="Oldpeak (ST depression)" id="Oldpeak" name="Oldpeak"
+                    value={formData.Oldpeak} onChange={handleChange}
+                    placeholder="e.g. 1.5" error={errors.Oldpeak}
+                    disabled={isLoading} step="0.1"
+                    tooltip="ST depression induced by exercise relative to rest"
+                  />
+                  <div className="sm:col-span-2">
+                    <SelectField
+                      label="ST Slope (Peak Exercise)" id="ST_Slope" name="ST_Slope"
+                      value={formData.ST_Slope} onChange={handleChange}
+                      options={SLOPE_LABELS} disabled={isLoading}
+                      tooltip="Slope of the peak exercise ST segment"
+                    />
+                  </div>
                 </div>
               )}
 
-              {/* Navigation Buttons */}
+              {/* Navigation */}
               <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-100 dark:border-dark-700">
                 {step > 1 ? (
                   <button type="button" onClick={prevStep} className="btn-secondary gap-2" disabled={isLoading}>
@@ -293,11 +507,11 @@ const PredictionPage = () => {
 
                 {step < 3 ? (
                   <button type="button" id={`next-step-${step}`} onClick={nextStep} className="btn-primary gap-2">
-                    Next
+                    Continue
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 ) : (
-                  <button type="submit" id="submit-prediction" disabled={isLoading} className="btn-primary gap-2">
+                  <button type="submit" id="submit-prediction" disabled={isLoading} className="btn-primary gap-2 px-8">
                     {isLoading ? (
                       <>
                         <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -308,8 +522,9 @@ const PredictionPage = () => {
                       </>
                     ) : (
                       <>
-                        <Heart className="w-5 h-5" />
-                        Predict Heart Disease
+                        <Heart className="w-5 h-5 fill-white" />
+                        Predict Risk
+                        <ArrowRight className="w-4 h-4" />
                       </>
                     )}
                   </button>

@@ -3,7 +3,7 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Heart, Home, Activity, Clock, Info, LayoutDashboard,
-  Users, Settings, LogOut, Sun, Moon, Menu, X, ChevronDown
+  Users, Settings, LogOut, Sun, Moon, Menu, X, ChevronDown, Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -22,6 +22,7 @@ const Header = () => {
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef(null);
 
   // Initialize dark mode from localStorage
@@ -34,6 +35,13 @@ const Header = () => {
       document.documentElement.classList.remove('dark');
       setDarkMode(false);
     }
+  }, []);
+
+  // Scroll shadow
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => window.removeEventListener('scroll', handler);
   }, []);
 
   // Close dropdown on outside click
@@ -72,28 +80,33 @@ const Header = () => {
     .toUpperCase() || '?';
 
   const linkClass = ({ isActive }) =>
-    `text-sm font-medium flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-150 ${
+    `text-sm font-semibold flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all duration-200 ${
       isActive
-        ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20'
-        : 'text-slate-600 dark:text-slate-400 hover:text-medical-600 dark:hover:text-medical-400 hover:bg-slate-100 dark:hover:bg-dark-700'
+        ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/25 shadow-sm'
+        : 'text-slate-600 dark:text-slate-400 hover:text-medical-600 dark:hover:text-medical-300 hover:bg-slate-100 dark:hover:bg-dark-700'
     }`;
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border-b border-slate-200 dark:border-dark-700 shadow-sm">
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${
+      scrolled
+        ? 'bg-white/95 dark:bg-dark-900/95 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-slate-200/80 dark:border-dark-700'
+        : 'bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border-b border-slate-100 dark:border-dark-800'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0" id="nav-logo">
-            <div className="p-1.5 rounded-xl bg-cardiac-500/15 border border-cardiac-500/25 animate-heartbeat">
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" id="nav-logo">
+            <div className="relative p-2 rounded-xl bg-gradient-to-br from-cardiac-500/20 to-cardiac-600/10 border border-cardiac-500/25 group-hover:shadow-glow-red transition-all duration-300 animate-heartbeat">
               <Heart className="w-5 h-5 text-cardiac-500 fill-cardiac-500" />
             </div>
-            <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight">
-              CardioCare <span className="text-gradient">AI</span>
+            <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight font-display">
+              CardioSense <span className="text-gradient">AI</span>
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {visibleLinks.map(link => (
               <NavLink key={link.to} to={link.to} end={link.to === '/'} className={linkClass} id={`nav-${link.label.toLowerCase()}`}>
                 {link.icon}
@@ -108,10 +121,13 @@ const Header = () => {
             <button
               onClick={toggleDark}
               id="header-dark-toggle"
-              className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-700 transition-colors"
+              className="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-700 hover:text-slate-700 dark:hover:text-slate-200 transition-all duration-200"
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {darkMode
+                ? <Sun className="w-4.5 h-4.5" />
+                : <Moon className="w-4.5 h-4.5" />
+              }
             </button>
 
             {user ? (
@@ -120,20 +136,27 @@ const Header = () => {
                 <button
                   id="user-dropdown-btn"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-dark-700 transition-colors"
+                  className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-dark-700 transition-all duration-200"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-medical-500 to-medical-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-medical-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-glow-blue">
                     {initials}
                   </div>
                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 card shadow-xl border border-slate-100 dark:border-dark-700 py-2 animate-fade-in-up">
+                  <div className="absolute right-0 mt-2 w-60 card shadow-2xl border border-slate-100 dark:border-dark-600 py-2 animate-slide-down">
                     {/* User info */}
-                    <div className="px-4 py-3 border-b border-slate-100 dark:border-dark-700">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.full_name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                    <div className="px-4 py-3 mb-1 border-b border-slate-100 dark:border-dark-700">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-medical-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">
+                          {initials}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.full_name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                        </div>
+                      </div>
                     </div>
                     {[
                       { to: '/settings', label: 'Profile & Settings', icon: <Settings className="w-4 h-4" /> },
@@ -146,7 +169,7 @@ const Header = () => {
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-700 transition-colors"
                         onClick={() => setDropdownOpen(false)}
                       >
-                        <span className="text-slate-400">{item.icon}</span>
+                        <span className="text-slate-400 dark:text-slate-500">{item.icon}</span>
                         {item.label}
                       </Link>
                     ))}
@@ -165,14 +188,17 @@ const Header = () => {
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Link to="/login" id="nav-login" className="btn-ghost">Sign In</Link>
-                <Link to="/register" id="nav-register" className="btn-primary py-2 text-sm">Get Started</Link>
+                <Link to="/login" id="nav-login" className="btn-ghost text-sm">Sign In</Link>
+                <Link to="/register" id="nav-register" className="btn-primary py-2 px-4 text-sm">
+                  <Zap className="w-3.5 h-3.5" />
+                  Get Started
+                </Link>
               </div>
             )}
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-dark-700 transition-colors"
+              className="md:hidden p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-700 transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               id="mobile-menu-btn"
             >
@@ -184,7 +210,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-slate-200 dark:border-dark-700 bg-white dark:bg-dark-900 animate-fade-in">
+        <div className="md:hidden border-t border-slate-100 dark:border-dark-700 bg-white dark:bg-dark-900 animate-slide-down">
           <nav className="px-4 py-3 space-y-1">
             {visibleLinks.map(link => (
               <NavLink
@@ -192,8 +218,10 @@ const Header = () => {
                 to={link.to}
                 end={link.to === '/'}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    isActive ? 'bg-medical-50 dark:bg-medical-900/20 text-medical-600 dark:text-medical-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-700'
+                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    isActive
+                      ? 'bg-medical-50 dark:bg-medical-900/25 text-medical-600 dark:text-medical-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-dark-700'
                   }`
                 }
                 onClick={() => setMobileOpen(false)}
@@ -212,7 +240,7 @@ const Header = () => {
             {user && (
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-cardiac-600 dark:text-cardiac-400 hover:bg-cardiac-50 dark:hover:bg-cardiac-900/20 rounded-xl transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-cardiac-600 dark:text-cardiac-400 hover:bg-cardiac-50 dark:hover:bg-cardiac-900/20 rounded-xl transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out

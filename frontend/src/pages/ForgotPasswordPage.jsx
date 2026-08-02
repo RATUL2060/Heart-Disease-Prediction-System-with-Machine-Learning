@@ -17,14 +17,14 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-950 via-medical-900 to-dark-900 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-6">
       <div className="w-full max-w-md">
         <div className="glass rounded-3xl p-8 shadow-2xl border border-white/10">
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 rounded-xl bg-cardiac-500/20 border border-cardiac-500/30">
+            <div className="p-2.5 rounded-2xl bg-cardiac-500/20 border border-cardiac-500/30 animate-heartbeat">
               <Heart className="w-6 h-6 text-cardiac-400 fill-cardiac-400" />
             </div>
-            <span className="text-white font-bold text-xl">CardioCare AI</span>
+            <span className="text-white font-extrabold text-xl font-display">CardioSense AI</span>
           </div>
 
           {sent ? (

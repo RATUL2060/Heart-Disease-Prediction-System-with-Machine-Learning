@@ -4,10 +4,13 @@ My first Repository.
 Author-Dhrubo Ratul Basak
 
 frontend
-npm.cmd install
-npm.cmd run dev
+
+ C:\Users\aiden\Desktop\GitDemo\Heart-Disease-Prediction-System-with-Machine-Learning\frontend> cmd /c npm run dev
 
 backend
 
-cd Heart-Disease-Prediction-System/frontend
-uvicorn main:app --reload
+(venv) PS C:\Users\aiden\Desktop\GitDemo\Heart-Disease-Prediction-System-with-Machine-Learning\frontend\backend> .\venv\Scripts\Activate.ps1
+>> 
+(venv) PS C:\Users\aiden\Desktop\GitDemo\Heart-Disease-Prediction-System-with-Machine-Learning\frontend\backend> .\venv\Scripts\activate.bat
+>> 
+(venv) PS C:\Users\aiden\Desktop\GitDemo\Heart-Disease-Prediction-System-with-Machine-Learning\frontend\backend> uvicorn main:app --reload
