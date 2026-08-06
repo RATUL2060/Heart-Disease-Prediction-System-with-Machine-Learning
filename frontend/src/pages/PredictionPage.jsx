@@ -4,9 +4,10 @@ import {
   Heart, User, Activity, ChevronRight, ChevronLeft,
   CheckCircle, XCircle, RotateCcw, AlertCircle,
   HeartPulse, Stethoscope, ClipboardList, ArrowRight,
-  ShieldAlert, ShieldCheck, PhoneCall, Calendar
+  ShieldAlert, ShieldCheck, PhoneCall, Calendar, Download
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import html2pdf from 'html2pdf.js';
 
 // ── Steps config ──
 const STEPS = [
@@ -116,6 +117,18 @@ const RiskGauge = ({ isHighRisk }) => {
 const PredictionResultCard = ({ prediction, onReset }) => {
   const isHighRisk = prediction === 1;
 
+  const handleDownloadPDF = () => {
+    const element = document.getElementById('prediction-report-content');
+    const opt = {
+      margin:       0.3,
+      filename:     `CardioSense_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
   const HIGH_RISK_RECS = [
     { icon: <PhoneCall className="w-4 h-4" />, text: 'Schedule a cardiology consultation immediately' },
     { icon: <ClipboardList className="w-4 h-4" />, text: 'Request ECG, stress test & echocardiogram' },
@@ -131,7 +144,7 @@ const PredictionResultCard = ({ prediction, onReset }) => {
   return (
     <div className="animate-bounce-in mt-8 space-y-4">
       {/* Main Result Card */}
-      <div className={`rounded-3xl overflow-hidden border-2 ${
+      <div id="prediction-report-content" className={`rounded-3xl overflow-hidden border-2 bg-white dark:bg-dark-800 ${
         isHighRisk
           ? 'border-cardiac-500/60 shadow-glow-red'
           : 'border-green-500/60 shadow-glow-green'
@@ -243,15 +256,24 @@ const PredictionResultCard = ({ prediction, onReset }) => {
             ⚠️ <strong>Note:</strong> This AI prediction is for educational purposes only. Always consult a qualified healthcare professional before making any medical decisions.
           </div>
 
-          {/* Reset button */}
-          <button
-            onClick={onReset}
-            id="assess-another"
-            className="w-full btn-secondary flex items-center justify-center gap-2 py-3.5"
-          >
-            <RotateCcw className="w-4 h-4" />
-            Assess Another Patient
-          </button>
+          {/* Actions */}
+          <div data-html2canvas-ignore="true" className="flex flex-col sm:flex-row gap-3 pt-2">
+            <button
+              onClick={onReset}
+              id="assess-another"
+              className="flex-1 btn-secondary flex items-center justify-center gap-2 py-3.5"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Assess Another Patient
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              className="flex-1 btn-primary flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 shadow-indigo-500/30"
+            >
+              <Download className="w-4 h-4" />
+              Download PDF Report
+            </button>
+          </div>
         </div>
       </div>
     </div>
