@@ -233,9 +233,7 @@ The prediction engine is built using a supervised Machine Learning model trained
 M.Sc. Data Science  
 TU Dortmund University
 
-GitHub:
 
-https://github.com/YOUR_GITHUB_USERNAME
 
 ---
 
