@@ -38,7 +38,7 @@ const RegisterPage = () => {
     }
   };
 
-  const inputClass = "input-field bg-white/5 border-white/10 text-white placeholder-slate-500 focus:border-medical-500";
+  const inputClass = "input-field";
 
   return (
     <div className="min-h-screen flex bg-gradient-hero">

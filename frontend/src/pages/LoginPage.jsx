@@ -72,7 +72,7 @@ const LoginPage = () => {
           <div className="mt-10 space-y-3 text-left">
             {[
               { icon: <Activity className="w-4 h-4" />, text: 'AI-powered cardiac risk analysis' },
-              { icon: <Shield className="w-4 h-4" />, text: 'HIPAA-compliant secure data storage' },
+              { icon: <Shield className="w-4 h-4" />, text: 'Secure patient data management' },
               { icon: <Heart className="w-4 h-4" />, text: 'Instant clinical recommendations' },
             ].map(({ icon, text }) => (
               <div key={text} className="flex items-center gap-3 text-slate-300 text-sm">
@@ -116,13 +116,13 @@ const LoginPage = () => {
                   Email address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 z-10" />
                   <input
                     type="email"
                     id="login-email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium bg-white/6 border border-white/12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-medical-500/50 focus:border-medical-500/50 transition-all duration-200"
+                    className="input-field pl-10 pr-4"
                     placeholder="doctor@hospital.com"
                     disabled={isLoading}
                     autoComplete="email"
@@ -141,13 +141,13 @@ const LoginPage = () => {
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 z-10" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     id="login-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 rounded-xl text-sm font-medium bg-white/6 border border-white/12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-medical-500/50 focus:border-medical-500/50 transition-all duration-200"
+                    className="input-field pl-10 pr-12"
                     placeholder="••••••••"
                     disabled={isLoading}
                     autoComplete="current-password"

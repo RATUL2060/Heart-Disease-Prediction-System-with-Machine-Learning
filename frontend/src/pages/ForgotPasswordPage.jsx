@@ -59,7 +59,7 @@ const ForgotPasswordPage = () => {
                       id="forgot-email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="input-field pl-10 bg-white/5 border-white/10 text-white placeholder-slate-500 focus:border-medical-500"
+                      className="input-field pl-10"
                       placeholder="doctor@hospital.com"
                       disabled={isLoading}
                     />

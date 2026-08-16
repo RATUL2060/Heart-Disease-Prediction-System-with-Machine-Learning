@@ -164,7 +164,7 @@ const HomePage = () => {
             <StatItem value="84%" rawValue={84} label="Test Accuracy" animate={statsVisible} />
             <StatItem value="11" rawValue={11} label="Clinical Parameters" animate={statsVisible} />
             <StatItem value="< 1s" rawValue={null} label="Prediction Speed" animate={statsVisible} />
-            <StatItem value="HIPAA" rawValue={null} label="Compliant Design" animate={statsVisible} />
+            <StatItem value="Secure" rawValue={null} label="Data Management" animate={statsVisible} />
           </div>
         </div>
       </section>

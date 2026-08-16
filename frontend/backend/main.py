@@ -55,11 +55,14 @@ def predict(
 ):
     """
     Run the ML prediction and save the result to history.
+    Returns prediction result + SHAP explanation.
     Requires a valid JWT Bearer token.
     """
-    prediction = predict_heart_disease(patient)
+    result = predict_heart_disease(patient)
+    prediction = result["prediction"]
+    explanation = result["explanation"]
 
-    # Save prediction to history
+    # Save prediction to history (unchanged — uses only the integer prediction)
     record = models.PredictionRecord(
         user_id=current_user.id,
         result=prediction,
@@ -78,4 +81,7 @@ def predict(
     db.add(record)
     db.commit()
 
-    return {"prediction": prediction}
+    return {
+        "prediction":  prediction,
+        "explanation": explanation,
+    }

@@ -21,3 +21,4 @@ frontend/dist/
 *.ipynb_checkpointse
 
 frontend/backend/heart_disease.db
+scratch/
