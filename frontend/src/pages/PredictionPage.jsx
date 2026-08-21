@@ -20,13 +20,13 @@ const STEPS = [
 const INITIAL_STATE = {
   Age: '', Sex: '1', ChestPainType: '0',
   RestingBP: '', Cholesterol: '', FastingBS: '0',
-  RestingECG: '0', MaxHR: '', ExerciseAngina: '0',
+  RestingECG: '1', MaxHR: '', ExerciseAngina: '0',
   Oldpeak: '', ST_Slope: '1',
 };
 
-const CHEST_PAIN_LABELS = ['Typical Angina', 'Atypical Angina', 'Non-anginal Pain', 'Asymptomatic'];
-const ECG_LABELS = ['Normal', 'ST-T Wave Abnormality', 'Left Ventricular Hypertrophy'];
-const SLOPE_LABELS = ['Up-sloping', 'Flat', 'Down-sloping'];
+const CHEST_PAIN_LABELS = ['Asymptomatic (ASY)', 'Atypical Angina (ATA)', 'Non-anginal Pain (NAP)', 'Typical Angina (TA)'];
+const ECG_LABELS = ['Left Ventricular Hypertrophy (LVH)', 'Normal', 'ST-T Wave Abnormality (ST)'];
+const SLOPE_LABELS = ['Down-sloping', 'Flat', 'Up-sloping'];
 
 // ── Field components ──
 const SelectField = ({ label, id, name, value, onChange, options, disabled, tooltip }) => (
@@ -397,7 +397,7 @@ const PredictionPage = () => {
         ChestPainType: Number(formData.ChestPainType), RestingBP: Number(formData.RestingBP),
         Cholesterol: Number(formData.Cholesterol), FastingBS: Number(formData.FastingBS),
         RestingECG: Number(formData.RestingECG), MaxHR: Number(formData.MaxHR),
-        ExerciseAngina: Number(formData.ExerciseAngina), Oldpeak: Number(formData.Oldpeak),
+        ExerciseAngina: Number(formData.ExerciseAngina), Oldpeak: parseInt(formData.Oldpeak, 10),
         ST_Slope: Number(formData.ST_Slope),
       };
       const response = await predictHeartDisease(payload);
