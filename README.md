@@ -8,6 +8,12 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 
 ---
 
+
+# 🏗️ System Architecture
+
+![CardioSense AI Architecture](images/architecture.png)
+
+
 ## 🚀 Features
 
 - 🫀 AI-based Heart Disease Prediction
@@ -15,10 +21,11 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 - 👨‍⚕️ Patient Management (CRUD)
 - 📊 Interactive Analytics Dashboard
 - 📜 Prediction History
+- 📄 Clinical PDF Report Generation
+- 📈 Explainable AI with SHAP
 - 🌙 Dark Mode Support
 - 📱 Fully Responsive Design
 - ⚡ FastAPI REST API
-- 🤖 Machine Learning Integration
 - 🎨 Modern UI built with Tailwind CSS
 
 ---
@@ -47,6 +54,7 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 - Scikit-learn
 - Pandas
 - NumPy
+- SHAP
 - Pickle
 
 ---
@@ -81,7 +89,6 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 
 ```text
 Heart-Disease-Prediction-System-with-Machine-Learning
-
 │
 ├── frontend
 │   ├── src
@@ -89,16 +96,16 @@ Heart-Disease-Prediction-System-with-Machine-Learning
 │   ├── package.json
 │   └── vite.config.js
 │
-├── backend
-│   ├── app
-│   │   ├── routers
-│   │   ├── auth.py
-│   │   ├── database.py
-│   │   ├── predictor.py
-│   │   └── schemas.py
-│   │
-│   ├── requirements.txt
-│   └── main.py
+│   └── backend
+│       ├── app
+│       │   ├── routers
+│       │   ├── auth.py
+│       │   ├── database.py
+│       │   ├── predictor.py
+│       │   └── schemas.py
+│       │
+│       ├── requirements.txt
+│       └── main.py
 │
 ├── models
 │   └── model.sav
@@ -106,6 +113,7 @@ Heart-Disease-Prediction-System-with-Machine-Learning
 ├── images
 │
 ├── README.md
+├── LICENSE
 └── .gitignore
 ```
 
@@ -213,9 +221,6 @@ The prediction engine is built using a supervised Machine Learning model trained
 
 # 🎯 Future Improvements
 
-- 🤖 AI Health Assistant
-- 📄 PDF Report Generation
-- 📈 Explainable AI (SHAP)
 - 🏥 Nearby Cardiologist & Hospital Finder
 - 📍 Interactive Maps Integration
 - ☁️ Cloud Deployment
@@ -233,7 +238,7 @@ The prediction engine is built using a supervised Machine Learning model trained
 M.Sc. Data Science  
 TU Dortmund University
 
-
+> ⚠️ **Disclaimer:** CardioSense AI is an educational and portfolio project. Its predictions are not medical diagnoses and should not be used as a substitute for professional medical advice.
 
 ---
 
