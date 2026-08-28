@@ -115,8 +115,15 @@ Heart-Disease-Prediction-System-with-Machine-Learning
 ├── README.md
 ├── LICENSE
 └── .gitignore
-```
 
+Docker
+├── Backend container
+├── Frontend container
+├── SQLite persistent volume
+└── Docker Compose
+```
+docker compose up -d
+http://localhost:3000
 ---
 
 # ⚙️ Installation
@@ -222,11 +229,6 @@ The prediction engine is built using a supervised Machine Learning model trained
 # 🎯 Future Improvements
 
 - 🏥 Nearby Cardiologist & Hospital Finder
-- 📍 Interactive Maps Integration
-- ☁️ Cloud Deployment
-- 🐳 Docker Support
-- 🗄 PostgreSQL Database
-- 📧 Email Notifications
 - 🔄 CI/CD Pipeline
 
 ---
