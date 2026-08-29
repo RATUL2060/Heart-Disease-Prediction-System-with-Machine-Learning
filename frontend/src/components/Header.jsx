@@ -3,7 +3,7 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Heart, Home, Activity, Clock, Info, LayoutDashboard,
-  Users, Settings, LogOut, Sun, Moon, Menu, X, ChevronDown, Zap
+  Users, Settings, LogOut, Sun, Moon, Menu, X, ChevronDown, Zap, MapPin
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" />, protected: true },
   { to: '/predict', label: 'Prediction', icon: <Activity className="w-4 h-4" />, protected: true },
   { to: '/patients', label: 'Patients', icon: <Users className="w-4 h-4" />, protected: true },
+  { to: '/nearby-care', label: 'Nearby Care', icon: <MapPin className="w-4 h-4" />, protected: true },
   { to: '/history', label: 'History', icon: <Clock className="w-4 h-4" />, protected: true },
   { to: '/about', label: 'About', icon: <Info className="w-4 h-4" /> },
 ];

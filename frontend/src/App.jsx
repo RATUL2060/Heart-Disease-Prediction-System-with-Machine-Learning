@@ -15,6 +15,7 @@ import AboutPage from './pages/AboutPage';
 import DashboardPage from './pages/DashboardPage';
 import PatientsPage from './pages/PatientsPage';
 import SettingsPage from './pages/SettingsPage';
+import NearbyCarePage from './pages/NearbyCarePage';
 
 // Layout wrapper: pages with Header + Footer
 const AppLayout = ({ children }) => (
@@ -71,6 +72,11 @@ function App() {
         <Route path="/settings" element={
           <ProtectedRoute>
             <AppLayout><SettingsPage /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/nearby-care" element={
+          <ProtectedRoute>
+            <AppLayout><NearbyCarePage /></AppLayout>
           </ProtectedRoute>
         } />
 

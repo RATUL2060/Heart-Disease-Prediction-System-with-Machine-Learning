@@ -7,7 +7,7 @@ from app import models
 from app.schemas import Patient
 from app.predictor import predict_heart_disease
 from app.auth import get_current_user
-from app.routers import auth_router, patients_router, history_router
+from app.routers import auth_router, patients_router, history_router, nearby_router
 
 # Create all database tables on startup
 models.Base.metadata.create_all(bind=engine)
@@ -36,6 +36,7 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(patients_router.router)
 app.include_router(history_router.router)
+app.include_router(nearby_router.router)
 
 
 @app.get("/")

@@ -97,3 +97,18 @@ export const getDashboardStats = async () => {
     return response.data;
   } catch (e) { handleError(e); }
 };
+
+// ---- Nearby Care ----
+export const searchLocation = async (query) => {
+  try {
+    const response = await apiClient.get('/nearby/search', { params: { q: query } });
+    return response.data;
+  } catch (e) { handleError(e); }
+};
+
+export const getNearbyFacilities = async (lat, lon, radius = 5000) => {
+  try {
+    const response = await apiClient.get('/nearby/facilities', { params: { lat, lon, radius } });
+    return response.data;
+  } catch (e) { handleError(e); }
+};

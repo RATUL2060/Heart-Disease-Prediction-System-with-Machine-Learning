@@ -9,6 +9,9 @@ import {
 import toast from 'react-hot-toast';
 import html2pdf from 'html2pdf.js';
 import ShapExplanation from '../components/ShapExplanation';
+import { Link } from 'react-router-dom';
+import { useNearbyFacilities } from '../hooks/useNearbyFacilities';
+import { MapPin, Navigation } from 'lucide-react';
 
 // ── Steps config ──
 const STEPS = [
@@ -118,6 +121,7 @@ const RiskGauge = ({ isHighRisk }) => {
 const PredictionResultCard = ({ prediction, explanation, onReset }) => {
   const isHighRisk = prediction === 1;
   const top5 = (explanation || []).slice(0, 5);
+  const { facilities, isLocating, locationError, requestLocation, userLocation } = useNearbyFacilities();
 
   const handleDownloadPDF = () => {
     const shapRows = top5.map(f => `
@@ -300,6 +304,70 @@ const PredictionResultCard = ({ prediction, explanation, onReset }) => {
           {/* Disclaimer */}
           <div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900 text-xs text-amber-700 dark:text-amber-400">
             ⚠️ <strong>Note:</strong> This AI prediction is for educational purposes only. Always consult a qualified healthcare professional before making any medical decisions.
+          </div>
+
+          {/* Nearby Care Recommendation */}
+          <div data-html2canvas-ignore="true" className="rounded-2xl p-6 bg-slate-50 dark:bg-dark-900 border border-slate-200 dark:border-dark-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+                  Recommended Care Near You
+                </h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  {isHighRisk 
+                    ? "Consider seeking prompt medical evaluation from a cardiologist or healthcare professional."
+                    : "Consider discussing your heart health with a healthcare professional during a routine consultation."
+                  }
+                </p>
+              </div>
+              
+              {!userLocation && !facilities.length && (
+                <button 
+                  onClick={() => requestLocation(isHighRisk)}
+                  disabled={isLocating}
+                  className="btn-primary whitespace-nowrap text-sm px-4 py-2"
+                >
+                  {isLocating ? 'Locating...' : 'Use My Location'}
+                </button>
+              )}
+            </div>
+
+            {locationError && (
+              <div className="mt-4 text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10 p-3 rounded-lg border border-amber-200 dark:border-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <p>{locationError}</p>
+                <Link to="/nearby-care" className="font-semibold hover:underline flex items-center gap-1 whitespace-nowrap">
+                  Search manually <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
+
+            {facilities.length > 0 && (
+              <div className="mt-5 space-y-4 animate-slide-in-up">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {facilities.slice(0, 3).map(fac => (
+                    <div key={fac.id} className="p-4 bg-white dark:bg-dark-800 rounded-xl border border-slate-200 dark:border-dark-700 shadow-sm hover:shadow-md transition-shadow">
+                      <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate" title={fac.name}>{fac.name}</h4>
+                      <p className="text-xs text-slate-500 capitalize">{fac.type}</p>
+                      <p className="text-xs font-semibold text-brand-600 dark:text-brand-400 mt-1">{fac.distance.toFixed(1)} km away</p>
+                      
+                      <a 
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${fac.lat},${fac.lon}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+                      >
+                        <Navigation className="w-3 h-3" /> Get Directions
+                      </a>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-2 border-t border-slate-200 dark:border-dark-700">
+                  <Link to="/nearby-care" className="text-sm font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 flex items-center justify-center gap-1 w-full py-2 bg-brand-50 dark:bg-brand-900/20 rounded-lg transition-colors">
+                    View All Nearby Care <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Actions */}
