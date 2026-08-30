@@ -4,7 +4,7 @@
 
 ### AI-Powered Heart Disease Prediction Platform
 
-CardioSense AI is a modern full-stack healthcare web application that predicts the risk of heart disease using a trained Machine Learning model. The platform enables secure user authentication, patient management, interactive analytics, and real-time predictions through an intuitive and responsive interface.
+CardioSense AI is a full-stack ML healthcare application with React, FastAPI, authentication, SQLite, explainable AI, geolocation-based healthcare search, Docker containerization, and automated CI.
 
 ---
 
@@ -21,8 +21,9 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 - 👨‍⚕️ Patient Management (CRUD)
 - 📊 Interactive Analytics Dashboard
 - 📜 Prediction History
-- 📄 Clinical PDF Report Generation
 - 📈 Explainable AI with SHAP
+- 🏥 Nearby Cardiologist & Hospital Finder
+- 🌍 Location-based Healthcare Search
 - 🌙 Dark Mode Support
 - 📱 Fully Responsive Design
 - ⚡ FastAPI REST API
@@ -57,6 +58,21 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 - SHAP
 - Pickle
 
+### Location & Maps
+
+- Leaflet
+- React-Leaflet
+- OpenStreetMap
+- Nominatim
+- Overpass API
+
+### DevOps
+
+- Docker
+- Docker Compose
+- Nginx
+- GitHub Actions (CI)
+
 ---
 
 # 📸 Application Preview
@@ -90,37 +106,56 @@ CardioSense AI is a modern full-stack healthcare web application that predicts t
 ```text
 Heart-Disease-Prediction-System-with-Machine-Learning
 │
+├── .github
+│   └── workflows
+│       └── ci.yml
+│
 ├── frontend
 │   ├── src
-│   ├── public
+│   │   ├── components
+│   │   │   └── NearbyCare
+│   │   │       ├── MapViewer.jsx
+│   │   │       └── FacilityList.jsx
+│   │   │
+│   │   ├── hooks
+│   │   │   └── useNearbyFacilities.js
+│   │   │
+│   │   ├── pages
+│   │   │   └── NearbyCarePage.jsx
+│   │   │
+│   │   └── services
+│   │       └── api.js
+│   │
+│   ├── backend
+│   │   ├── app
+│   │   │   ├── routers
+│   │   │   │   ├── auth_router.py
+│   │   │   │   ├── prediction_router.py
+│   │   │   │   └── nearby_router.py
+│   │   │   │
+│   │   │   ├── auth.py
+│   │   │   ├── database.py
+│   │   │   ├── predictor.py
+│   │   │   └── schemas.py
+│   │   │
+│   │   ├── requirements.txt
+│   │   └── main.py
+│   │
 │   ├── package.json
 │   └── vite.config.js
-│
-│   └── backend
-│       ├── app
-│       │   ├── routers
-│       │   ├── auth.py
-│       │   ├── database.py
-│       │   ├── predictor.py
-│       │   └── schemas.py
-│       │
-│       ├── requirements.txt
-│       └── main.py
 │
 ├── models
 │   └── model.sav
 │
 ├── images
 │
+├── Dockerfile.backend
+├── Dockerfile.frontend
+├── docker-compose.yml
+├── nginx.conf
+├── .dockerignore
 ├── README.md
-├── LICENSE
-└── .gitignore
-
-Docker
-├── Backend container
-├── Frontend container
-├── SQLite persistent volume
-└── Docker Compose
+└── LICENSE
 ```
 docker compose up -d
 http://localhost:3000
@@ -185,6 +220,20 @@ http://localhost:3000
 
 ---
 
+# 🐳 Running with Docker
+
+CardioSense AI can be run using Docker Compose, which starts the frontend and backend as separate containers.
+
+### Start the application
+
+```bash
+docker compose up -d
+docker compose ps
+docker compose logs backend
+```
+
+
+
 # 🤖 Machine Learning Model
 
 The prediction engine is built using a supervised Machine Learning model trained on clinical heart disease data.
@@ -213,7 +262,7 @@ The prediction engine is built using a supervised Machine Learning model trained
 # 📡 REST API
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+|--------|----------|-------------|
 | POST | `/auth/register` | Register User |
 | POST | `/auth/login` | User Login |
 | GET | `/auth/me` | Current User |
@@ -223,13 +272,12 @@ The prediction engine is built using a supervised Machine Learning model trained
 | DELETE | `/patients/{id}` | Delete Patient |
 | POST | `/predict` | Predict Heart Disease |
 | GET | `/history` | Prediction History |
+| GET | `/nearby/search` | Search for a location |
+| GET | `/nearby/facilities` | Find nearby healthcare facilities |
 
 ---
 
-# 🎯 Future Improvements
 
-- 🏥 Nearby Cardiologist & Hospital Finder
-- 🔄 CI/CD Pipeline
 
 ---
 
